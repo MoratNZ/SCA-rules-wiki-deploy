@@ -39,7 +39,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ${RULES_CONTEXT}/images
+        source: ${RULES_CONTEXT}/image_backups
         target: /image_backups
         read_only: false
       - type: bind
@@ -90,7 +90,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ${DRAFT_RULES_CONTEXT}/images
+        source: ${DRAFT_RULES_CONTEXT}/image_backups
         target: /image_backups
         read_only: false
       - type: bind
