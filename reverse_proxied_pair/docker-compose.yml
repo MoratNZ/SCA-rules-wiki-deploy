@@ -13,12 +13,8 @@ services:
       - 80:80
     volumes:
       - type: bind
-        source: nginx/nginx.conf
-        target: /etc/nginx/conf.d/nginx.conf
-        read_only: false
-      - type: bind
-        source: nginx/template_variables
-        target: /etc/nginx/templates/10-variables.conf.template
+        source: nginx/default.conf.template
+        target: /etc/nginx/templates/default.conf.template
         read_only: true
 
   rules-mediawiki:
@@ -102,7 +98,7 @@ services:
         target: /var/www/html/LocalSettings.php
         read_only: true
 
-  draft_rules-database:
+  draft-rules-database:
     image: ghcr.io/moratnz/sca-rules-db:main
     environment:
       - DB_NAME=mediawiki

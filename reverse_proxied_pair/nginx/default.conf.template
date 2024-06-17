@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name $rules_wiki_url www.$rules_wiki_url;	
+    server_name $RULES_WIKI_URL www.$RULES_WIKI_URL;
 
     location / {
         proxy_pass          http://rules-mediawiki:80/;
@@ -11,7 +11,7 @@ server {
 }
 server {
     listen 80;
-    server_name $draft_rules_wiki_url www.$draft_rules_wiki_url;	
+    server_name $DRAFT_RULES_WIKI_URL www.$DRAFT_RULES_WIKI_URL;	
 
     location / {
         proxy_pass          http://draft-rules-mediawiki:80/;
