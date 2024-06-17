@@ -1,0 +1,142 @@
+# MediaWiki with MySQL
+services:
+  nginx:
+    depends_on:
+      - rules-mediawiki
+      - draft-rules-mediawiki
+    image: nginx:latest
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - RULES_WIKI_URL=${ RULES_BASE_URL }
+      - DRAFT_RULES_WIKI_URL=${ DRAFT_RULES_BASE_URL }
+    volumes:
+      - type: bind
+        source: nginx/conf.d/
+        target: /etc/nginx/conf.d
+        read_only: true 
+      - type: bind
+        source: nginx/template_variables
+        target: /etc/nginx/templates/10-variables.conf.template
+        read_only: true 
+      # - type: bind
+      #   source: certbot/www/
+      #   target: /var/www/certbot/
+      #   read_only: true 
+
+  # certbot:
+  #   image: certbot/certbot:latest
+  #   volumes:
+  #     - type: bind
+  #       source: certbot/www/
+  #       target: /var/www/certbot/
+  #       read_only: false 
+  #     - type: bind
+  #       source: certbot/conf
+  #       target: /etc/letsencrypt/
+  #       read_only: false 
+        
+  rules-mediawiki:
+    depends_on:
+      rules-database:
+        condition: service_healthy
+        restart: true
+    image: ghcr.io/moratnz/sca-rules-wiki:latest
+    environment:
+      - SITE_NAME=${ RULES_SITE_NAME }
+      # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
+      # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
+      - BASE_URL=http://${ RULES_BASE_URL }
+      - WIKI_EMAIL=${WIKI_EMAIL}
+      - DB_URL=rules-database:3306
+      - DB_NAME=mediawiki
+      - DB_USER=mediawiki
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_SECRET_KEY=${DB_SECRET_KEY}
+      - DB_UPGRADE_KEY=${DB_UPGRADE_KEY}
+      - BACKUPS_LOCATION=/image_backups
+    restart: always
+    volumes:
+      - type: bind
+        source: ${ RULES_CONTEXT }/images
+        target: /image_backups
+        read_only: false
+      - type: bind
+        source: ${ RULES_CONTEXT }/LocalSettings.php
+        target: /var/www/html/LocalSettings.php
+        read_only: true
+      
+  rules-database:
+    image: ghcr.io/moratnz/sca-rules-db:main
+    environment:
+      - DB_NAME=mediawiki
+      - MYSQL_USER=mediawiki
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - BACKUPS_LOCATION=/db_backups
+    restart: always
+
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+    volumes:
+      - type: bind
+        source: ${ RULES_CONTEXT }/db_backups
+        target: /db_backups
+        read_only: false
+
+
+  draft-rules-mediawiki:
+    depends_on:
+      draft_rules-database:
+        condition: service_healthy
+        restart: true
+    image: ghcr.io/moratnz/sca-rules-wiki:latest
+    environment:
+      - SITE_NAME=${ DRAFT_RULES_SITE_NAME }
+      # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
+      # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
+      - BASE_URL=http://${ DRAFT_RULES_BASE_URL }
+      - WIKI_EMAIL=${WIKI_EMAIL}
+      - DB_URL=draft_rules-database:3306
+      - DB_NAME=mediawiki
+      - DB_USER=mediawiki
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_SECRET_KEY=${DB_SECRET_KEY}
+      - DB_UPGRADE_KEY=${DB_UPGRADE_KEY}
+      - BACKUPS_LOCATION=/image_backups
+    restart: always
+    volumes:
+      - type: bind
+        source: ${ DRAFT_RULES_CONTEXT }/images
+        target: /image_backups
+        read_only: false
+      - type: bind
+        source: ${ DRAFT_RULES_CONTEXT }/LocalSettings.php
+        target: /var/www/html/LocalSettings.php
+        read_only: true
+      
+  draft_rules-database:
+    image: ghcr.io/moratnz/sca-rules-db:main
+    environment:
+      - DB_NAME=mediawiki
+      - MYSQL_USER=mediawiki
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - BACKUPS_LOCATION=/db_backups
+    restart: always
+
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+    volumes:
+      - type: bind
+        source: ${ DRAFT_RULES_CONTEXT }/db_backups
+        target: /db_backups
+        read_only: false
