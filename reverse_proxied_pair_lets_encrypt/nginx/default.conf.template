@@ -1,0 +1,54 @@
+server {
+    listen 80;
+    server_name $RULES_WIKI_URL www.$RULES_WIKI_URL;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$RULES_WIKI_URL$request_uri;
+    }
+}
+server {
+    listen 443 ssl http2;
+    server_name $RULES_WIKI_URL www.$RULES_WIKI_URL;    
+
+    ssl_certificate /etc/nginx/ssl/live/$RULES_WIKI_URL/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/$RULES_WIKI_URL/privkey.pem;
+
+    location / {
+        proxy_pass          http://rules-mediawiki:80/;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $remote_addr;
+    }
+}
+
+server {
+    listen 80;
+    server_name $DRAFT_RULES_WIKI_URL www.$DRAFT_RULES_WIKI_URL;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$DRAFT_RULES_WIKI_URL$request_uri;
+    }
+}
+server {
+    listen 443 ssl http2;
+    server_name $DRAFT_RULES_WIKI_URL www.$DRAFT_RULES_WIKI_URL;    
+
+    ssl_certificate /etc/nginx/ssl/live/$DRAFT_RULES_WIKI_URL/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/$DRAFT_RULES_WIKI_URL/privkey.pem;
+
+    location / {
+        proxy_pass          http://draft-rules-mediawiki:80/;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $remote_addr;
+    }
+}
+

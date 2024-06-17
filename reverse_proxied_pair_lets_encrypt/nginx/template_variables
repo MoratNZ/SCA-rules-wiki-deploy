@@ -1,7 +1,0 @@
-map $host $rules_wiki_url {
-  default "$RULES_WIKI_URL";
-}
-
-map $host $draft_rules_wiki_url {
-  default "$DRAFT_RULES_WIKI_URL";
-}

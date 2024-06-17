@@ -1,0 +1,27 @@
+server {
+    listen 80;
+    server_name $RULES_WIKI_URL www.$RULES_WIKI_URL;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$RULES_WIKI_URL$request_uri;
+    }
+}
+
+server {
+    listen 80;
+    server_name $DRAFT_RULES_WIKI_URL www.$DRAFT_RULES_WIKI_URL;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$DRAFT_RULES_WIKI_URL$request_uri;
+    }
+}
+
+

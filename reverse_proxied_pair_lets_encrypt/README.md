@@ -1,5 +1,9 @@
 # Reverse Proxied Pair of Wikis
 
+`sudo  docker compose -f bootstrap-docker-compose.yml run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d example.com`
+`sudo  docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.com`
+`docker compose run --rm certbot renew`
+
 ## Introduction
 This configuration sets up a pair of wiki instances behind an nginx reverse proxy, and secures traffic with https, using a certificate provided by [Lets Encrypt](https://letsencrypt.org) and managed by certbot.
 
