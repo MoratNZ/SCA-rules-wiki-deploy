@@ -235,3 +235,4 @@ $wgGroupPermissions['SiegeEditor']['editSiege'] = true;
 $wgGroupPermissions['ThrownWeaponsEditor']['editThrownWeapons'] = true;
 $wgGroupPermissions['YouthMartialEditor']['editYouthMartial'] = true;
 
+$wgShowExceptionDetails = true;

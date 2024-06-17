@@ -48,7 +48,7 @@ services:
         read_only: true
 
   rules-database:
-    image: ghcr.io/moratnz/sca-rules-db:main
+    image: ghcr.io/moratnz/sca-rules-db:latest
     environment:
       - DB_NAME=mediawiki
       - MYSQL_USER=mediawiki
@@ -99,7 +99,7 @@ services:
         read_only: true
 
   draft-rules-database:
-    image: ghcr.io/moratnz/sca-rules-db:main
+    image: ghcr.io/moratnz/sca-rules-db:latest
     environment:
       - DB_NAME=mediawiki
       - MYSQL_USER=mediawiki
