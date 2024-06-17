@@ -6,6 +6,9 @@ services:
       - draft-rules-mediawiki
     image: nginx:latest
     restart: always
+    environment:
+      - RULES_WIKI_URL=${RULES_WIKI_URL}
+      - DRAFT_RULES_WIKI_URL=${DRAFT_RULES_WIKI_URL}
     ports:
       - 80:80
     volumes:
@@ -16,7 +19,7 @@ services:
       - type: bind
         source: nginx/template_variables
         target: /etc/nginx/templates/10-variables.conf.template
-        read_only: true 
+        read_only: true
 
   rules-mediawiki:
     depends_on:
@@ -28,7 +31,7 @@ services:
       - SITE_NAME=${RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
       # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
-      - BASE_URL=http://${RULES_BASE_URL}
+      - BASE_URL=http://${RULES_WIKI_URL}
       - WIKI_EMAIL=${WIKI_EMAIL}
       - DB_URL=rules-database:3306
       - DB_NAME=mediawiki
@@ -47,7 +50,7 @@ services:
         source: ${RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
-      
+
   rules-database:
     image: ghcr.io/moratnz/sca-rules-db:main
     environment:
@@ -69,7 +72,6 @@ services:
         target: /db_backups
         read_only: false
 
-
   draft-rules-mediawiki:
     depends_on:
       draft_rules-database:
@@ -80,7 +82,7 @@ services:
       - SITE_NAME=${DRAFT_RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
       # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
-      - BASE_URL=http://${DRAFT_RULES_BASE_URL}
+      - BASE_URL=http://${DRAFT_RULES_WIKI_URL}
       - WIKI_EMAIL=${WIKI_EMAIL}
       - DB_URL=draft_rules-database:3306
       - DB_NAME=mediawiki
@@ -99,7 +101,7 @@ services:
         source: ${DRAFT_RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
-      
+
   draft_rules-database:
     image: ghcr.io/moratnz/sca-rules-db:main
     environment:
