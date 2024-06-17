@@ -25,10 +25,10 @@ services:
         restart: true
     image: ghcr.io/moratnz/sca-rules-wiki:latest
     environment:
-      - SITE_NAME=${ RULES_SITE_NAME }
+      - SITE_NAME=${RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
       # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
-      - BASE_URL=http://${ RULES_BASE_URL }
+      - BASE_URL=http://${RULES_BASE_URL}
       - WIKI_EMAIL=${WIKI_EMAIL}
       - DB_URL=rules-database:3306
       - DB_NAME=mediawiki
@@ -40,11 +40,11 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ${ RULES_CONTEXT }/images
+        source: ${RULES_CONTEXT}/images
         target: /image_backups
         read_only: false
       - type: bind
-        source: ${ RULES_CONTEXT }/LocalSettings.php
+        source: ${RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
       
@@ -65,7 +65,7 @@ services:
 
     volumes:
       - type: bind
-        source: ${ RULES_CONTEXT }/db_backups
+        source: ${RULES_CONTEXT}/db_backups
         target: /db_backups
         read_only: false
 
