@@ -10,34 +10,34 @@ services:
       - 80:80
       - 443:443
     environment:
-      - RULES_WIKI_URL=${RULES_BASE_URL}
-      - DRAFT_RULES_WIKI_URL=${DRAFT_RULES_BASE_URL}
+      - RULES_WIKI_URL=${RULES_WIKI_URL}
+      - DRAFT_RULES_WIKI_URL=${DRAFT_RULES_WIKI_URL}
     volumes:
       - type: bind
         source: nginx/conf.d/
         target: /etc/nginx/conf.d
-        read_only: true 
+        read_only: true
       - type: bind
         source: nginx/template_variables
         target: /etc/nginx/templates/10-variables.conf.template
-        read_only: true 
+        read_only: true
       # - type: bind
       #   source: certbot/www/
       #   target: /var/www/certbot/
       #   read_only: true 
 
-  # certbot:
-  #   image: certbot/certbot:latest
-  #   volumes:
-  #     - type: bind
-  #       source: certbot/www/
-  #       target: /var/www/certbot/
-  #       read_only: false 
-  #     - type: bind
-  #       source: certbot/conf
-  #       target: /etc/letsencrypt/
-  #       read_only: false 
-        
+      # certbot:
+      #   image: certbot/certbot:latest
+      #   volumes:
+      #     - type: bind
+      #       source: certbot/www/
+      #       target: /var/www/certbot/
+      #       read_only: false 
+      #     - type: bind
+      #       source: certbot/conf
+      #       target: /etc/letsencrypt/
+      #       read_only: false 
+
   rules-mediawiki:
     depends_on:
       rules-database:
@@ -48,7 +48,7 @@ services:
       - SITE_NAME=${RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
       # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
-      - BASE_URL=http://${RULES_BASE_URL}
+      - WIKI_URL=http://${RULES_WIKI_URL}
       - WIKI_EMAIL=${WIKI_EMAIL}
       - DB_URL=rules-database:3306
       - DB_NAME=mediawiki
@@ -67,7 +67,7 @@ services:
         source: ${RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
-      
+
   rules-database:
     image: ghcr.io/moratnz/sca-rules-db:main
     environment:
@@ -79,7 +79,7 @@ services:
     restart: always
 
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
 
@@ -88,7 +88,6 @@ services:
         source: ${RULES_CONTEXT}/db_backups
         target: /db_backups
         read_only: false
-
 
   draft-rules-mediawiki:
     depends_on:
@@ -100,7 +99,7 @@ services:
       - SITE_NAME=${DRAFT_RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
       # rather than e.g., combat-rules.some.domain.com/index.php) results in a rediect loop
-      - BASE_URL=http://${DRAFT_RULES_BASE_URL}
+      - WIKI_URL=http://${DRAFT_RULES_WIKI_URL}
       - WIKI_EMAIL=${WIKI_EMAIL}
       - DB_URL=draft_rules-database:3306
       - DB_NAME=mediawiki
@@ -119,7 +118,7 @@ services:
         source: ${DRAFT_RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
-      
+
   draft_rules-database:
     image: ghcr.io/moratnz/sca-rules-db:main
     environment:
@@ -131,7 +130,7 @@ services:
     restart: always
 
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
 
