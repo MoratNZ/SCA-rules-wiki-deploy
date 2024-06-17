@@ -12,7 +12,7 @@ services:
       - type: bind
         source: nginx/conf.d/
         target: /etc/nginx/conf.d
-        read_only: true 
+        read_only: false
       - type: bind
         source: nginx/template_variables
         target: /etc/nginx/templates/10-variables.conf.template
