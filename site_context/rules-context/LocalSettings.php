@@ -37,7 +37,7 @@ $wgResourceBasePath = $wgScriptPath;
 
 ## The URL path to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
-#$wgLogo = "http://lochac.sca.org/lochac/pics/Lochac304.gif";
+$wgLogo = getenv("LOGO_URL");
 
 ## UPO means: this is also a user preference option
 

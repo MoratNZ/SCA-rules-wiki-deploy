@@ -19,6 +19,7 @@ services:
       - DB_SECRET_KEY=${DB_SECRET_KEY}
       - DB_UPGRADE_KEY=${DB_UPGRADE_KEY}
       - BACKUPS_LOCATION=/image_backups
+      - LOGO_URL=${LOGO_URL}
     restart: always
     ports:
       - 80:80
