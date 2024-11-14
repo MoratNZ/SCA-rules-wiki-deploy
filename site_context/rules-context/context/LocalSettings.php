@@ -14,7 +14,11 @@ if (!defined('MEDIAWIKI')) {
 }
 
 # Set this as a draft wiki (enables watermarking of pdf output etc)
-$makepdfIsDraft = true;
+$makepdfIsDraft = false;
+
+# Define the magic sortKeys for titlepages and contents pages
+$makepdfTitlepageSortKey = 'titlepage';
+$makepdfContentsSortKey = 'contents';
 
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
@@ -34,6 +38,10 @@ $wgServer = getenv("BASE_URL");
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
+
+## The URL path to the logo.  Make sure you change this from the default,
+## or else you'll overwrite your logo when you upgrade!
+$wgLogo = getenv("LOGO_URL");
 
 ## UPO means: this is also a user preference option
 
@@ -126,7 +134,7 @@ wfLoadExtension('MakePdfBook');
 wfLoadExtension('VisualEditor');
 wfLoadExtension('WikiEditor');
 wfLoadExtension('TemplateData');
-wfLoadExtension('ParserFunctions');
+
 
 # Allow uploading of SVGs and render them correctly
 $wgFileExtensions[] = 'svg';
@@ -146,13 +154,6 @@ $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
 
 # Additional namespace definitions
-define("NS_GLOBAL", 550);
-define("NS_GLOBAL_NOTES", 551);
-$wgExtraNamespaces[NS_GLOBAL] = "Global";
-$wgExtraNamespaces[NS_GLOBAL_NOTES] = "Global_notes";
-$wgContentNamespaces[] = NS_GLOBAL;
-$wgNamespaceProtection[NS_GLOBAL] = array('editGlobal');
-
 define("NS_ARCHERY", 1000);
 define("NS_ARCHERY_NOTES", 1001);
 $wgExtraNamespaces[NS_ARCHERY] = "Archery";
@@ -174,12 +175,12 @@ $wgExtraNamespaces[NS_EQUESTRIAN_NOTES] = "Equestrian_notes";
 $wgContentNamespaces[] = NS_EQUESTRIAN;
 $wgNamespaceProtection[NS_EQUESTRIAN] = array('editEquestrian');
 
-define("NS_RAPIER", 1006);
-define("NS_RAPIER_NOTES", 1007);
-$wgExtraNamespaces[NS_RAPIER] = "Rapier";
-$wgExtraNamespaces[NS_RAPIER_NOTES] = "Rapier_notes";
-$wgContentNamespaces[] = NS_RAPIER;
-$wgNamespaceProtection[NS_RAPIER] = array('editRapier');
+define("NS_FENCING", 1006);
+define("NS_FENCING_NOTES", 1007);
+$wgExtraNamespaces[NS_FENCING] = "Fencing";
+$wgExtraNamespaces[NS_FENCING_NOTES] = "Fencing_notes";
+$wgContentNamespaces[] = NS_FENCING;
+$wgNamespaceProtection[NS_FENCING] = array('editFencing');
 
 define("NS_SIEGE", 1008);
 define("NS_SIEGE_NOTES", 1009);
@@ -193,6 +194,8 @@ define("NS_THROWN_WEAPONS_NOTES", 1011);
 $wgExtraNamespaces[NS_THROWN_WEAPONS] = "Thrown_Weapons";
 $wgExtraNamespaces[NS_THROWN_WEAPONS_NOTES] = "Thrown_Weapons_notes";
 $wgContentNamespaces[] = NS_THROWN_WEAPONS;
+$wgNamespaceProtection[NS_THROWN_WEAPONS] = array('editThrownWeapons');
+
 define("NS_YOUTH_MARTIAL", 1012);
 define("NS_YOUTH_MARTIAL_NOTES", 1013);
 $wgExtraNamespaces[NS_YOUTH_MARTIAL] = "Youth_Martial";
@@ -200,34 +203,11 @@ $wgExtraNamespaces[NS_YOUTH_MARTIAL_NOTES] = "Youth_Martial_notes";
 $wgContentNamespaces[] = NS_YOUTH_MARTIAL;
 $wgNamespaceProtection[NS_YOUTH_MARTIAL] = array('editYouthMartial');
 
-define("NS_ARMORED_STEEL_COMBAT", 1014);
-define("NS_ARMORED_STEEL_COMBAT_NOTES", 1015);
-$wgExtraNamespaces[NS_ARMORED_STEEL_COMBAT] = "Armored_Steel_Combat";
-$wgExtraNamespaces[NS_ARMORED_STEEL_COMBAT_NOTES] = "Armored_Steel_Combat_notes";
-$wgContentNamespaces[] = NS_ARMORED_STEEL_COMBAT;
-$wgNamespaceProtection[NS_ARMORED_STEEL_COMBAT] = array('editArmoredSteelCombat');
-
-define("NS_CUT_AND_THRUST", 1016);
-define("NS_CUT_AND_THRUST_NOTES", 1017);
-$wgExtraNamespaces[NS_CUT_AND_THRUST] = "Cut_And_Thrust";
-$wgExtraNamespaces[NS_CUT_AND_THRUST_NOTES] = "Cut_And_Thrust_notes";
-$wgContentNamespaces[] = NS_CUT_AND_THRUST;
-$wgNamespaceProtection[NS_CUT_AND_THRUST] = array('editCutAndThrust');
-
-define("NS_HARNISCHFECHTEN", 1018);
-define("NS_HARNISCHFECHTEN_NOTES", 1019);
-$wgExtraNamespaces[NS_HARNISCHFECHTEN] = "Harnischfechten";
-$wgExtraNamespaces[NS_HARNISCHFECHTEN_NOTES] = "Harnischfechten_notes";
-$wgContentNamespaces[] = NS_HARNISCHFECHTEN;
-$wgNamespaceProtection[NS_HARNISCHFECHTEN] = array('editHarnischfechten');
-
 # User permission settings
 # General users can read, but can't edit
 # They also can't create their own accounts
 $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['edit'] = false;
-$wgGroupPermissions['*']['read'] = false;
-
 
 # Logged in users can edit the general namespace
 $wgGroupPermissions['user']['read'] = true;
@@ -243,17 +223,12 @@ $wgGroupPermissions['editor']['applychangetags'] = true;
 $wgGroupPermissions['editor']['applychangetags'] = true;
 
 # Namespaces can be editted by their specific editors
-$wgGroupPermissions['GlobalEditor']['editGlobal'] = true;
 $wgGroupPermissions['ArcheryEditor']['editArchery'] = true;
 $wgGroupPermissions['ArmoredCombatEditor']['editArmoredCombat'] = true;
 $wgGroupPermissions['EquestrianEditor']['editEquestrian'] = true;
-$wgGroupPermissions['RapierEditor']['editRapier'] = true;
-$wgGroupPermissions['RapierEditor']['editCutAndThrust'] = true;
+$wgGroupPermissions['FencingEditor']['editFencing'] = true;
 $wgGroupPermissions['SiegeEditor']['editSiege'] = true;
 $wgGroupPermissions['ThrownWeaponsEditor']['editThrownWeapons'] = true;
 $wgGroupPermissions['YouthMartialEditor']['editYouthMartial'] = true;
-$wgGroupPermissions['ArmoredSteelCombatEditor']['editArmoredSteelCombat'] = true;
-$wgGroupPermissions['HarnischfechtenEditor']['editHarnischfechten'] = true;
 
 $wgShowExceptionDetails = true;
-$wgDebugDumpSql = true;
