@@ -184,9 +184,36 @@ $kingdoms = [
     'West_Kingdom' => 1900,
 ];
 
+# User permission settings
+# General users can read, but can't edit
+# They also can't create their own accounts
+$wgGroupPermissions['*']['createaccount'] = false;
+$wgGroupPermissions['*']['edit'] = false;
+$wgGroupPermissions['*']['read'] = false;
+$wgGroupPermissions['*']['delete'] = false;
+$wgGroupPermissions['*']['createpage'] = false;
+
+# Logged in users can edit the general namespace
+$wgGroupPermissions['user']['read'] = true;
+$wgGroupPermissions['user']['edit'] = false;
+$wgGroupPermissions['user']['delete'] = false;
+$wgGroupPermissions['user']['changetags'] = false;
+$wgGroupPermissions['user']['applychangetags'] = false;
+$wgGroupPermissions['user']['createpage'] = false;
+
+$wgGroupPermissions['Editor'] = $wgGroupPermissions['user'];
+$wgGroupPermissions['Editor']['createpage'] = true;
+$wgGroupPermissions['Editor']['delete'] = true;
+$wgGroupPermissions['Editor']['edit'] = true;
+$wgGroupPermissions['Editor']['changetags'] = true;
+$wgGroupPermissions['Editor']['applychangetags'] = true;
+
+$wgGroupPermissions['SocietyMarshal'] = $wgGroupPermissions['Editor'];
+
 # Create society namespaces
-foreach ( $handbookNamespaces as $ns => $ns_index ){
+foreach ( $handbookNamespaces as $ns => $index ){
 	$ns_name = $ns;
+	$ns_index = $index;
 	$ns_perms = sprintf("edit%s", str_replace("_", "", $ns_name ));
 
 	$society_deputy_role = sprintf("Society%sEditor",str_replace("_", "", $ns_name));
@@ -199,6 +226,9 @@ foreach ( $handbookNamespaces as $ns => $ns_index ){
 	$wgContentNamespaces[] = $ns_index;
 	$wgNamespaceProtection[$ns_index] = array($ns_perms);
 
+	$wgGroupPermissions['SocietyMarshal'][$ns_perms] = true;
+
+	$wgGroupPermissions[$society_deputy_role] = $wgGroupPermissions['Editor'];
 	$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
 }
 
@@ -213,19 +243,19 @@ foreach( $kingdoms as $kingdom_name => $index_offset){
 			}
 		}
 		$ns_name = $ns;
-		$kingdom_name = str_replace("_","",$kingdom_name);
+		$kingdom_name_nospaces = str_replace("_","",$kingdom_name);
 		$ns_name_nospaces = str_replace("_","",$ns_name);
 
 		$society_deputy_role = sprintf("Society%sEditor", $ns_name_nospaces);
 
-		$ns_perms = sprintf("edit%s%s", $kingdom_name, $ns_name_nospaces);
-		$ns_editor = sprintf("%s%sEditor", $kingdom_name, $ns_name_nospaces);
+		$ns_perms = sprintf("edit%s%s", $kingdom_name_nospaces, $ns_name_nospaces);
+		$ns_editor = sprintf("%s%sEditor", $kingdom_name_nospaces, $ns_name_nospaces);
 		$ns_index = $ns_index + $index_offset;
 		
 		$notes_name = sprintf("%s_notes", $ns_name);
 		$notes_index = $ns_index + 1;
 
-		$wgExtraNamespaces[$ns_index] = $ns_name;
+		$wgExtraNamespaces[$ns_index] = sprintf("%s_%s",$kingdom_name,$ns_name);
 		$wgExtraNamespaces[$notes_index] = $notes_name;
 		$wgContentNamespaces[] = $ns_index;
 
@@ -234,33 +264,29 @@ foreach( $kingdoms as $kingdom_name => $index_offset){
 		if($kingdom_name === "Model"){
 			$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
 		}  else {
+			$wgGroupPermissions[$ns_editor] = $wgGroupPermissions['Editor'];
 			$wgGroupPermissions[$ns_editor][$ns_perms] = true;
 			$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
 			$wgGroupPermissions[$kingdom_earl_marshal_role][$ns_perms] = true;
+			$wgGroupPermissions['SocietyMarshal'][$ns_perms] = true;
 		}
 	}
 }
 
-# User permission settings
-# General users can read, but can't edit
-# They also can't create their own accounts
-$wgGroupPermissions['*']['createaccount'] = false;
-$wgGroupPermissions['*']['edit'] = false;
-$wgGroupPermissions['*']['read'] = false;
+// # Additional namespace definitions
+// define("NS_GLOBAL", 550);
+// define("NS_GLOBAL_NOTES", 551);
+// $wgExtraNamespaces[NS_GLOBAL] = "Global";
+// $wgExtraNamespaces[NS_GLOBAL_NOTES] = "Global_notes";
+// $wgContentNamespaces[] = NS_GLOBAL;
+// $wgNamespaceProtection[NS_GLOBAL] = array('editGlobal');
+// $wgGroupPermissions['SiegeEditor']['editSiege'] = true;
 
-# Logged in users can edit the general namespace
-$wgGroupPermissions['user']['read'] = true;
-$wgGroupPermissions['user']['edit'] = false;
-$wgGroupPermissions['user']['changetags'] = false;
-$wgGroupPermissions['user']['applychangetags'] = false;
-$wgGroupPermissions['user']['applychangetags'] = false;
 
-$wgGroupPermissions['MainNamespaceEditor'] = $wgGroupPermissions['user'];
-$wgGroupPermissions['MainNamespaceEditor']['edit'] = true;
-$wgGroupPermissions['MainNamespaceEditor']['changetags'] = true;
-$wgGroupPermissions['MainNamespaceEditor']['applychangetags'] = true;
 
-# Leaving the below in pending migration to 'Society' roles
+
+
+# Namespaces can be editted by their specific editors
 $wgGroupPermissions['GlobalEditor']['editGlobal'] = true;
 $wgGroupPermissions['ArcheryEditor']['editArchery'] = true;
 $wgGroupPermissions['ArmoredCombatEditor']['editArmoredCombat'] = true;
