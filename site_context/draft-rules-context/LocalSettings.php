@@ -145,81 +145,101 @@ $wgMimeTypeFile = '/etc/mime.types';
 $wgAllowDisplayTitle = true;
 $wgRestrictDisplayTitle = false;
 
-# Additional namespace definitions
-define("NS_GLOBAL", 550);
-define("NS_GLOBAL_NOTES", 551);
-$wgExtraNamespaces[NS_GLOBAL] = "Global";
-$wgExtraNamespaces[NS_GLOBAL_NOTES] = "Global_notes";
-$wgContentNamespaces[] = NS_GLOBAL;
-$wgNamespaceProtection[NS_GLOBAL] = array('editGlobal');
 
-define("NS_ARCHERY", 1000);
-define("NS_ARCHERY_NOTES", 1001);
-$wgExtraNamespaces[NS_ARCHERY] = "Archery";
-$wgExtraNamespaces[NS_ARCHERY_NOTES] = "Archery_notes";
-$wgContentNamespaces[] = NS_ARCHERY;
-$wgNamespaceProtection[NS_ARCHERY] = array('editArchery');
+$handbookNamespaces = [
+	"Global" => 550,
+	"Archery" => 1000,
+	"Armored_Combat" => 1002, 
+	"Equestrian" => 1004, 
+	"Rapier" => 1006,
+	"Siege" => 1008, 
+	"Thrown_Weapons" => 1010, 
+	"Youth_Martial" => 1012, 
+	"Armored_Steel_Combat" => 1014, 
+	"Cut_And_Thrust" => 1016, 
+	"Harnischfechten" => 1018, 
+];
 
-define("NS_ARMORED_COMBAT", 1002);
-define("NS_ARMORED_COMBAT_NOTES", 1003);
-$wgExtraNamespaces[NS_ARMORED_COMBAT] = "Armored_Combat";
-$wgExtraNamespaces[NS_ARMORED_COMBAT_NOTES] = "Armored_Combat_notes";
-$wgContentNamespaces[] = NS_ARMORED_COMBAT;
-$wgNamespaceProtection[NS_ARMORED_COMBAT] = array('editArmoredCombat');
+$kingdoms = [
+	'Model' => 100,
+	'Aethelmearc' => 200, 
+	'An_Tir' => 300, 
+	'Ansteorra' => 400,
+	'Artemisia' => 500,
+    'Atenveldt' => 600,
+    'Atlantia' => 700,
+    'Avacal' => 800,
+    'Caid' => 900,
+    'Calontir' => 1000,
+    # 'Drachenwald'  deliberately omitted
+    'Ealdormere' => 1100,
+    'East_Kingdom' => 1200,
+    'Gleann_Abhann' => 1300,
+    # 'Lochac   ' deliberately omitted
+    'Meridies' => 1400,
+    'Midrealm' => 1500,
+    'Northshield' => 1600,
+    'Outlands' => 1700,
+    'Trimaris' => 1800,
+    'West_Kingdom' => 1900,
+];
 
-define("NS_EQUESTRIAN", 1004);
-define("NS_EQUESTRIAN_NOTES", 1005);
-$wgExtraNamespaces[NS_EQUESTRIAN] = "Equestrian";
-$wgExtraNamespaces[NS_EQUESTRIAN_NOTES] = "Equestrian_notes";
-$wgContentNamespaces[] = NS_EQUESTRIAN;
-$wgNamespaceProtection[NS_EQUESTRIAN] = array('editEquestrian');
+# Create society namespaces
+foreach ( $handbookNamespaces as $ns => $ns_index ){
+	$ns_name = $ns;
+	$ns_perms = sprintf("edit%s", str_replace("_", "", $ns_name ));
 
-define("NS_RAPIER", 1006);
-define("NS_RAPIER_NOTES", 1007);
-$wgExtraNamespaces[NS_RAPIER] = "Rapier";
-$wgExtraNamespaces[NS_RAPIER_NOTES] = "Rapier_notes";
-$wgContentNamespaces[] = NS_RAPIER;
-$wgNamespaceProtection[NS_RAPIER] = array('editRapier');
+	$society_deputy_role = sprintf("Society%sEditor",str_replace("_", "", $ns_name));
 
-define("NS_SIEGE", 1008);
-define("NS_SIEGE_NOTES", 1009);
-$wgExtraNamespaces[NS_SIEGE] = "Siege";
-$wgExtraNamespaces[NS_SIEGE_NOTES] = "Siege_notes";
-$wgContentNamespaces[] = NS_SIEGE;
-$wgNamespaceProtection[NS_SIEGE] = array('editSiege');
+	$notes = sprintf("%s_notes", $ns_name );
+	$notes_index = $ns_index + 1;
 
-define("NS_THROWN_WEAPONS", 1010);
-define("NS_THROWN_WEAPONS_NOTES", 1011);
-$wgExtraNamespaces[NS_THROWN_WEAPONS] = "Thrown_Weapons";
-$wgExtraNamespaces[NS_THROWN_WEAPONS_NOTES] = "Thrown_Weapons_notes";
-$wgContentNamespaces[] = NS_THROWN_WEAPONS;
-define("NS_YOUTH_MARTIAL", 1012);
-define("NS_YOUTH_MARTIAL_NOTES", 1013);
-$wgExtraNamespaces[NS_YOUTH_MARTIAL] = "Youth_Martial";
-$wgExtraNamespaces[NS_YOUTH_MARTIAL_NOTES] = "Youth_Martial_notes";
-$wgContentNamespaces[] = NS_YOUTH_MARTIAL;
-$wgNamespaceProtection[NS_YOUTH_MARTIAL] = array('editYouthMartial');
+	$wgExtraNamespaces[$ns_index] = $ns_name;
+	$wgExtraNamespaces[$notes_index] = $notes;
+	$wgContentNamespaces[] = $ns_index;
+	$wgNamespaceProtection[$ns_index] = array($ns_perms);
 
-define("NS_ARMORED_STEEL_COMBAT", 1014);
-define("NS_ARMORED_STEEL_COMBAT_NOTES", 1015);
-$wgExtraNamespaces[NS_ARMORED_STEEL_COMBAT] = "Armored_Steel_Combat";
-$wgExtraNamespaces[NS_ARMORED_STEEL_COMBAT_NOTES] = "Armored_Steel_Combat_notes";
-$wgContentNamespaces[] = NS_ARMORED_STEEL_COMBAT;
-$wgNamespaceProtection[NS_ARMORED_STEEL_COMBAT] = array('editArmoredSteelCombat');
+	$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
+}
 
-define("NS_CUT_AND_THRUST", 1016);
-define("NS_CUT_AND_THRUST_NOTES", 1017);
-$wgExtraNamespaces[NS_CUT_AND_THRUST] = "Cut_And_Thrust";
-$wgExtraNamespaces[NS_CUT_AND_THRUST_NOTES] = "Cut_And_Thrust_notes";
-$wgContentNamespaces[] = NS_CUT_AND_THRUST;
-$wgNamespaceProtection[NS_CUT_AND_THRUST] = array('editCutAndThrust');
+# Create kingdom namespaces
+foreach( $kingdoms as $kingdom_name => $index_offset){
+	$kingdom_earl_marshal_role = sprintf("%sEarlMarshal", str_replace("_", "", $kingdom_name));
 
-define("NS_HARNISCHFECHTEN", 1018);
-define("NS_HARNISCHFECHTEN_NOTES", 1019);
-$wgExtraNamespaces[NS_HARNISCHFECHTEN] = "Harnischfechten";
-$wgExtraNamespaces[NS_HARNISCHFECHTEN_NOTES] = "Harnischfechten_notes";
-$wgContentNamespaces[] = NS_HARNISCHFECHTEN;
-$wgNamespaceProtection[NS_HARNISCHFECHTEN] = array('editHarnischfechten');
+	foreach ( $handbookNamespaces as $ns => $ns_index ){
+		if($ns === "Global"){
+			if($kingdom_name !== "Society"){
+				continue;
+			}
+		}
+		$ns_name = $ns;
+		$kingdom_name = str_replace("_","",$kingdom_name);
+		$ns_name_nospaces = str_replace("_","",$ns_name);
+
+		$society_deputy_role = sprintf("Society%sEditor", $ns_name_nospaces);
+
+		$ns_perms = sprintf("edit%s%s", $kingdom_name, $ns_name_nospaces);
+		$ns_editor = sprintf("%s%sEditor", $kingdom_name, $ns_name_nospaces);
+		$ns_index = $ns_index + $index_offset;
+		
+		$notes_name = sprintf("%s_notes", $ns_name);
+		$notes_index = $ns_index + 1;
+
+		$wgExtraNamespaces[$ns_index] = $ns_name;
+		$wgExtraNamespaces[$notes_index] = $notes_name;
+		$wgContentNamespaces[] = $ns_index;
+
+		$wgNamespaceProtection[$ns_index] = array($ns_perms);
+
+		if($kingdom_name === "Model"){
+			$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
+		}  else {
+			$wgGroupPermissions[$ns_editor][$ns_perms] = true;
+			$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
+			$wgGroupPermissions[$kingdom_earl_marshal_role][$ns_perms] = true;
+		}
+	}
+}
 
 # User permission settings
 # General users can read, but can't edit
@@ -228,7 +248,6 @@ $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['*']['read'] = false;
 
-
 # Logged in users can edit the general namespace
 $wgGroupPermissions['user']['read'] = true;
 $wgGroupPermissions['user']['edit'] = false;
@@ -236,13 +255,12 @@ $wgGroupPermissions['user']['changetags'] = false;
 $wgGroupPermissions['user']['applychangetags'] = false;
 $wgGroupPermissions['user']['applychangetags'] = false;
 
-$wgGroupPermissions['editor'] = $wgGroupPermissions['user'];
-$wgGroupPermissions['editor']['edit'] = true;
-$wgGroupPermissions['editor']['changetags'] = true;
-$wgGroupPermissions['editor']['applychangetags'] = true;
-$wgGroupPermissions['editor']['applychangetags'] = true;
+$wgGroupPermissions['MainNamespaceEditor'] = $wgGroupPermissions['user'];
+$wgGroupPermissions['MainNamespaceEditor']['edit'] = true;
+$wgGroupPermissions['MainNamespaceEditor']['changetags'] = true;
+$wgGroupPermissions['MainNamespaceEditor']['applychangetags'] = true;
 
-# Namespaces can be editted by their specific editors
+# Leaving the below in pending migration to 'Society' roles
 $wgGroupPermissions['GlobalEditor']['editGlobal'] = true;
 $wgGroupPermissions['ArcheryEditor']['editArchery'] = true;
 $wgGroupPermissions['ArmoredCombatEditor']['editArmoredCombat'] = true;
