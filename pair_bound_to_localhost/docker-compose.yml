@@ -5,7 +5,7 @@ services:
       rules-database:
         condition: service_healthy
         restart: true
-    image: ghcr.io/moratnz/sca-rules-wiki:v0.12.1
+    image: ghcr.io/moratnz/sca-rules-wiki:v0.12.2
     environment:
       - SITE_NAME=${RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
@@ -34,7 +34,7 @@ services:
         read_only: true
 
   rules-database:
-    image: ghcr.io/moratnz/sca-rules-db:v0.12.1
+    image: ghcr.io/moratnz/sca-rules-db:v0.12.2
     environment:
       - DB_NAME=mediawiki
       - MYSQL_USER=mediawiki
@@ -59,7 +59,7 @@ services:
       draft-rules-database:
         condition: service_healthy
         restart: true
-    image: ghcr.io/moratnz/sca-rules-wiki:v0.12.1
+    image: ghcr.io/moratnz/sca-rules-wiki:v0.12.2
     environment:
       - SITE_NAME=${DRAFT_RULES_SITE_NAME}
       # including the 'http://' in the URL is critical, otherwise going to the bare host (combat-rules.some.domain.com
@@ -86,13 +86,13 @@ services:
         source: ${DRAFT_RULES_CONTEXT}/LocalSettings.php
         target: /var/www/html/LocalSettings.php
         read_only: true
-      - type: bind
-        source: ../../MakePdfBook
-        target: /var/www/html/extensions/MakePdfBook
-        read_only: false
+      # - type: bind
+      #   source: ../../MakePdfBook
+      #   target: /var/www/html/extensions/MakePdfBook
+      #   read_only: false
 
   draft-rules-database:
-    image: ghcr.io/moratnz/sca-rules-db:v0.12.1
+    image: ghcr.io/moratnz/sca-rules-db:v0.12.2
     environment:
       - DB_NAME=mediawiki
       - MYSQL_USER=mediawiki
