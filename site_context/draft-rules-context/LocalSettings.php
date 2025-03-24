@@ -263,6 +263,7 @@ foreach( $kingdoms as $kingdom_name => $index_offset){
 
 		if($kingdom_name === "Model"){
 			$wgGroupPermissions[$society_deputy_role][$ns_perms] = true;
+			$wgGroupPermissions['SocietyMarshal'][$ns_perms] = true;
 		}  else {
 			$wgGroupPermissions[$ns_editor] = $wgGroupPermissions['Editor'];
 			$wgGroupPermissions[$ns_editor][$ns_perms] = true;
